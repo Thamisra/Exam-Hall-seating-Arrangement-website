@@ -45,12 +45,15 @@
             font-size: 16px;
             border-radius: 5px;
             cursor: pointer;
-            margin-bottom: 10px;
+            margin-top: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             width: 150px;
             margin: auto;
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
         }
 
         .toggle-btn i {
@@ -129,26 +132,106 @@
             margin-top: 10px;
             font-weight: bold;
         }
-
     </style>
 </head>
 <body>
 
-<button class="toggle-btn" onclick="toggleDarkMode()">Toggle Dark Mode <i class="fas fa-moon"></i></button>
+<button class="toggle-btn"  onclick="toggleDarkMode()">Toggle Dark Mode <i class="fas fa-moon"></i></button>
 
 <div class="container">
     <h2>Exam Seating Arrangement</h2>
     <div id="clock"></div>
     <p>Enter your Register Number to check your seat details.</p>
-    <input type="text" id="registerNumber" placeholder="Enter Register Number">
+    <input type="text" id="registerNumber" placeholder="Enter Register Number" aria-label="Enter your Register Number">
     <button onclick="findSeat()">Check Seat</button>
     <div id="result" class="result"></div>
     <div class="seating-chart" id="seatingChart"></div>
 </div>
 
 <script>
+    // Sample data of seating arrangement
     const seatingData = {
         "20231015": { hall: "Room 205", seat: 1, dept: "EC" },
         "20231016": { hall: "Room 205", seat: 2, dept: "CS" },
         "20231017": { hall: "Room 205", seat: 3, dept: "EC" },
-        "20231018
+        "20231018": { hall: "Room 205", seat: 4, dept: "CS" },
+        "20231019": { hall: "Room 205", seat: 5, dept: "EC" },
+        "20231020": { hall: "Room 205", seat: 6, dept: "CS" },
+        "20231021": { hall: "Room 205", seat: 7, dept: "EC" },
+        "20231022": { hall: "Room 205", seat: 8, dept: "CS" },
+        "20231023": { hall: "Room 205", seat: 9, dept: "EC" },
+        "20231024": { hall: "Room 205", seat: 10, dept: "CS" }
+    };
+
+    // Function to generate seating chart
+    function generateSeatingChart(highlightSeat = null) {
+        let seatingChart = document.getElementById("seatingChart");
+        seatingChart.innerHTML = "";  
+
+        for (let i = 0; i < 5; i++) {
+            let bench = document.createElement("div");
+            bench.classList.add("bench");
+
+            for (let j = 0; j < 2; j++) {
+                let seatNumber = i * 2 + j + 1;
+                let seat = document.createElement("div");
+                seat.classList.add("seat");
+                seat.innerText = seatNumber;
+
+                // Highlight seat logic
+                if (highlightSeat === seatNumber) {
+                    seat.classList.add("highlight");
+                    seat.innerHTML = '<i class="fas fa-user"></i>'
+                }
+                bench.appendChild(seat);
+            }
+            seatingChart.appendChild(bench);
+        }
+    }
+
+    // Function to handle seat finding
+    function findSeat() {
+        let regNumber = document.getElementById("registerNumber").value.trim();
+        let resultDiv = document.getElementById("result");
+        let seatingChart = document.getElementById("seatingChart");
+
+        if (seatingData[regNumber]) {
+            let details = seatingData[regNumber];
+            resultDiv.innerHTML = `<strong>Exam Hall:</strong> ${details.hall}<br>
+                                   <strong>Seat Number:</strong> ${details.seat}<br>
+                                   <strong>Department:</strong> ${details.dept}`;
+            resultDiv.style.color = "green";
+            resultDiv.style.padding = "20px";
+
+            seatingChart.style.display = "block";  
+            generateSeatingChart(details.seat);
+        } else {
+            resultDiv.innerHTML = "Register Number not found!";
+            resultDiv.style.color = "red";
+            seatingChart.style.display = "none";  
+        }
+    }
+
+    // Dark mode toggle
+    function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+    }
+
+    // Function to update the clock
+    function updateClock() {
+        document.getElementById("clock").innerText = new Date().toLocaleTimeString();
+        setTimeout(updateClock, 1000);
+    }
+
+    // Initialize clock
+    updateClock();
+
+    // Event listeners for dark mode toggle and seat checking
+    document.getElementById("toggleDarkMode").addEventListener("click", toggleDarkMode);
+    document.getElementById("checkSeatBtn").addEventListener("click", findSeat);
+</script>
+
+</body>
+</html>
+
+    
